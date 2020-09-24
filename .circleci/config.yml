@@ -1,23 +1,24 @@
-version: 2.1
-
-# Define the jobs we want to run for this project
+version: 2
 jobs:
   build:
+    working_directory: /usr/share/nginx/html
     docker:
-      - image: circleci/php
+      - image: sujeetk94/devops
+        environment:
+          APP_ENV: test
     steps:
-      - checkout
-      - run: echo "this is the build job"
-  test:
-    docker:
-      - image: circleci/php
-    steps:
-      - checkout
-      - run: echo "this is the test job"
-
-# Orchestrate our job run sequence
-workflows:
-  build_and_test:
-    jobs:
-      - build
-      - test
+      - run:
+          name: Install system packages
+          command: apt-get update && apt-get -y install git
+      - run:
+          name: checking 
+          command: mkdir -p /usr/share/nginx/html/sujeet
+      - run:
+          name: running 
+          command: docker run -it -p 80:80 --name=devops -d sujeetk94/devops
+      - run:
+          name: commit
+          command: docker commit devops sujeetk94/devops:circleci
+      - run:
+          name: push to hub
+          command: docker push sujeetk94/devops:cirlceci
